@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FREE LIVE TV</title>
+  
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Shaka Player -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
+  
+  <style>
+    /* ==================== CSS VARIABLES ==================== */
+    :root {
+      --primary: #00d4ff;
+      --primary-dark: #0099cc;
+      --secondary: #ff3366;
+      --accent: #ffcc00;
+      --bg-main: #0a0e27;
+      --bg-secondary: #151935;
+      --bg-card: #1a1f3a;
+      --text-primary: #ffffff;
+      --text-secondary: #b8bfcc;
+      --text-muted: #6b7280;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ==================== RESET & BASE ==================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #151935 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ==================== SCROLLBAR ==================== */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+
+    /* ==================== HEADER ==================== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 2px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      transition: var(--transition);
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .logo i {
+      font-size: 2rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.2rem;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      border: 1px solid transparent;
+    }
+
+    .nav-links a:hover {
+      background: var(--bg-secondary);
+      color: var(--primary);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .nav-links a.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
+    }
+
+    .nav-links a .badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: var(--secondary);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(255, 51, 102, 0.5);
+    }
+
+    /* ==================== MAIN CONTAINER ==================== */
+    .main-container {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+      max-width: 1920px;
+      margin: 0 auto;
+    }
+
+    /* ==================== SIDEBAR ==================== */
+    .sidebar {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      height: calc(100vh - 140px);
+      overflow-y: auto;
+      position: sticky;
+      top: 100px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .sidebar-header {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .sidebar-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-search {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .sidebar-search input {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 3rem;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      color: white;
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .sidebar-search input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    }
+
+    .sidebar-search input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .sidebar-search i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    /* ==================== CATEGORIES ==================== */
+    .sidebar-categories {
+      margin-bottom: 1.5rem;
+    }
+
+    .sidebar-category-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--primary);
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .sidebar-category-title:hover {
+      background: var(--bg-main);
+    }
+
+    .sidebar-category-title i:last-child {
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-category-list {
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .sidebar-category-list.open {
+      display: flex;
+    }
+
+    .sidebar-category-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+    }
+
+    .sidebar-category-item:hover {
+      background: var(--bg-main);
+      border-color: var(--primary);
+      transform: translateX(5px);
+    }
+
+    .sidebar-category-item.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .category-count {
+      background: var(--accent);
+      color: var(--bg-main);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    /* ==================== CHANNELS LIST ==================== */
+    .channels-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .channel-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 2px solid transparent;
+    }
+
+    .channel-item:hover {
+      background: var(--bg-main);
+      border-color: var(--primary);
+      transform: translateX(8px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .channel-item.active {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 153, 204, 0.15));
+      border-color: var(--primary);
+      box-shadow: 0 4px 16px rgba(0, 212, 255, 0.2);
+    }
+
+    .channel-logo-small {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: var(--bg-main);
+      border: 2px solid var(--border-color);
+    }
+
+    .channel-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .channel-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .channel-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* ==================== CONTENT AREA ==================== */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ==================== PLAYER SECTION ==================== */
+    .player-section {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-color);
+    }
+
+    .player-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .current-channel {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .current-channel-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .channel-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.2rem;
+    }
+
+    .player-header-buttons {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .favorite-btn-player,
+    .fullscreen-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      padding: 0.65rem 1.2rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .favorite-btn-player:hover,
+    .fullscreen-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .favorite-btn-player.active {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      box-shadow: 0 0 20px rgba(255, 51, 102, 0.5);
+    }
+
+    .player-container {
+      position: relative;
+      width: 100%;
+      height: 0;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      background: #000;
+    }
+
+    .shaka-video-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .shaka-video-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* ==================== ADS CONTAINER ==================== */
+    .ads-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      min-height: 80px;
+    }
+
+    /* ==================== FLOATING BUTTONS ==================== */
+    .sidebar-toggle,
+    .mobile-category-menu,
+    .floating-contact {
+      position: fixed;
+      bottom: 2rem;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      cursor: pointer;
+      z-index: 900;
+      box-shadow: var(--shadow-lg);
+      transition: var(--transition);
+    }
+
+    .sidebar-toggle {
+      left: 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+
+    .mobile-category-menu {
+      left: 5.5rem;
+      background: linear-gradient(135deg, var(--accent), #e6b800);
+      color: var(--bg-main);
+    }
+
+    .floating-contact {
+      right: 1.5rem;
+      background: linear-gradient(135deg, var(--secondary), #cc0033);
+      color: white;
+      display: flex;
+    }
+
+    .floating-contact:hover,
+    .sidebar-toggle:hover,
+    .mobile-category-menu:hover {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ==================== MOBILE CATEGORY PANEL ==================== */
+    .mobile-category-panel {
+      position: fixed;
+      bottom: 9rem;
+      left: 1.5rem;
+      background: var(--bg-card);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      z-index: 850;
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 320px;
+      overflow-y: auto;
+      min-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .mobile-category-panel.open {
+      display: flex;
+    }
+
+    .category-chip {
+      padding: 0.65rem 1rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+    }
+
+    .category-chip:hover {
+      background: var(--bg-main);
+      border-color: var(--primary);
+    }
+
+    .category-chip.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+
+    /* ==================== LOADER ==================== */
+    .loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      gap: 1.5rem;
+    }
+
+  
+
+    .loader-text {
+      color: var(--primary);
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    /* ==================== RESPONSIVE DESIGN ==================== */
+    @media (max-width: 1200px) {
+      .main-container {
+        grid-template-columns: 280px 1fr;
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .sidebar {
+        width: 280px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      header {
+        padding: 1rem 1.5rem;
+      }
+
+      .main-container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+      }
+
+      .sidebar {
+        display: none;
+        position: fixed;
+        top: 80px;
+        left: 0;
+        width: 320px;
+        height: calc(100vh - 80px);
+        z-index: 950;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .sidebar.open {
+        display: block;
+      }
+
+      .sidebar-toggle,
+      .mobile-category-menu {
+        display: flex;
+      }
+
+      .player-container {
+        padding-bottom: 65%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 0.85rem 1rem;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+      }
+
+      .logo i {
+        font-size: 1.5rem;
+      }
+
+      .nav-links {
+        gap: 0.3rem;
+      }
+
+      .nav-links a {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+      }
+
+      .nav-links a span:not(.badge) {
+        display: none;
+      }
+
+      .player-header {
+        padding: 1rem;
+      }
+
+      .channel-title {
+        font-size: 1.1rem;
+      }
+
+      .current-channel-logo {
+        width: 50px;
+        height: 50px;
+      }
+
+      .favorite-btn-player,
+      .fullscreen-btn {
+        padding: 0.5rem 0.85rem;
+        font-size: 0.85rem;
+      }
+
+      .fullscreen-btn span {
+        display: none;
+      }
+
+      .floating-contact,
+      .sidebar-toggle,
+      .mobile-category-menu {
+        width: 50px;
+        height: 50px;
+        font-size: 1.1rem;
+        bottom: 1.5rem;
+      }
+
+      .sidebar-toggle {
+        left: 1rem;
+      }
+
+      .mobile-category-menu {
+        left: 4.5rem;
+      }
+
+      .floating-contact {
+        right: 1rem;
+      }
+
+      .mobile-category-panel {
+        bottom: 7.5rem;
+        left: 1rem;
+        width: 200px;
+      }
+
+      .sidebar.open {
+        width: 100%;
+        max-width: 320px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-container {
+        padding: 0.75rem;
+      }
+
+      .player-container {
+        padding-bottom: 75%;
+      }
+
+      .sidebar.open {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+
+    /* ==================== EMPTY STATE ==================== */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .empty-state p {
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Loader -->
+  <div class="loader" id="loader" style="display: none;">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Loading channels...</div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <a href="#" class="logo" id="homeBtn">
+      <i class="fas fa-broadcast-tower"></i>
+      <span>FREE - LIVE TV</span>
+    </a>
+    <div class="nav-links">
+      <a href="#" class="active" id="allChannelsBtn">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a href="#" id="favoritesBtn">
+        <i class="fas fa-heart"></i>
+        <span>Favorites</span>
+        <span class="badge" id="favCount">0</span>
+      </a>
+      <a href="#" id="recentBtn">
+        <i class="fas fa-history"></i>
+        <span>Recent</span>
+        <span class="badge" id="recentCount">10</span>
+      </a>
+      <a href="#contact" id="contactBtn">
+        <i class="fas fa-discord"></i>
+        <span>Contact</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Floating Buttons -->
+  <div class="sidebar-toggle" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <div class="mobile-category-menu" id="mobileCategoryMenu">
+    <i class="fas fa-filter"></i>
+  </div>
+
+  <div class="mobile-category-panel" id="mobileCategoryPanel"></div>
+
+  <div class="floating-contact" id="floatingContact">
+    <i class="fab fa-discord"></i>
+  </div>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <i class="fas fa-list-ul"></i>
+          <span>Channels</span>
+        </div>
+      </div>
+
+      <div class="sidebar-search">
+        <i class="fas fa-search"></i>
+        <input type="text" id="sidebarSearch" placeholder="Search channels...">
+      </div>
+
+      <div class="sidebar-categories">
+        <div class="sidebar-category-title" id="categoryToggle">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-tags"></i>
+            <span>Categories</span>
+          </div>
+          <i class="fas fa-chevron-down" id="categoryArrow"></i>
+        </div>
+        <div class="sidebar-category-list" id="sidebarCategoryList"></div>
+      </div>
+
+      <div class="channels-list" id="channelsList"></div>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="content-area" id="contentArea">
+      <!-- Player Section -->
+      <div class="player-section" id="playerSection">
+        <div class="player-header">
+          <div class="current-channel" id="currentChannelInfo">
+            <img src="https://cdn.discordapp.com/attachments/1453788108452659302/1458491848636240115/cat-head-kitten-symbol-gaming-cat-logo-elegant-element-for-brand-abstract-icon-symbols-vector.png?ex=695fd5e2&is=695e8462&hm=543ff3bc51d6afd7b28c304f1516d02d8a6e876bb974efba095c7ea5cebbcc1e&" 
+                 alt="Channel Logo" 
+                 class="current-channel-logo" 
+                 id="currentChannelLogo">
+            <div>
+              <div class="channel-title" id="currentChannelTitle">Select a channel to play</div>
+              <div class="channel-meta" id="currentChannelMeta">Click any channel to start streaming</div>
+            </div>
+          </div>
+
+          <div class="player-header-buttons">
+            <button class="favorite-btn-player" id="favoriteBtnPlayer" title="Add to favorites">
+              <i class="fas fa-heart"></i>
+            </button>
+            <button class="fullscreen-btn" id="fullscreenBtn" title="Fullscreen">
+              <i class="fas fa-expand"></i>
+              <span>Fullscreen</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="player-container" id="playerContainer">
+          <div class="shaka-video-container" id="videoContainer" shaka-controls="true">
+            <video autoplay muted playsinline id="videoElement" class="shaka-video"></video>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ads Container -->
+      <div class="ads-container">
+        <script type="text/javascript">
+          atOptions = {
+            'key' : 'db78e49a3c97dc3562c3b48559ea4a28',
+            'format' : 'iframe',
+            'height' : 60,
+            'width' : 320,
+            'params' : {}
+          };
+          document.write('<scr' + 'ipt type="text/javascript" src="http' + ('https:' == document.location.protocol ? 's' : '') + ':"></scr' + 'ipt>');
+        </script>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== ORIGINAL JAVASCRIPT (UNCHANGED) ==================== -->
+  <script>
+    // State management
+    let allChannels = [];
+    let filteredChannels = [];
+    let categories = new Set();
+    let categoryCounts = {};
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    let recentChannels = JSON.parse(localStorage.getItem('recentChannels')) || [];
+    let currentView = 'all';
+    let currentCategory = 'all';
+    let currentSearch = '';
+    let currentChannel = null;
+    let player = null;
+    let ui = null;
+    
+    // DOM elements
+    const loader = document.getElementById('loader');
+    const channelsList = document.getElementById('channelsList');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const contentArea = document.getElementById('contentArea');
+    const videoElement = document.getElementById('videoElement');
+    const videoContainer = document.getElementById('videoContainer');
+    const playerSection = document.getElementById('playerSection');
+    const currentChannelInfo = document.getElementById('currentChannelInfo');
+    const currentChannelLogo = document.getElementById('currentChannelLogo');
+    const currentChannelTitle = document.getElementById('currentChannelTitle');
+    const currentChannelMeta = document.getElementById('currentChannelMeta');
+    const favCountEl = document.getElementById('favCount');
+    const recentCountEl = document.getElementById('recentCount');
+    const sidebarSearch = document.getElementById('sidebarSearch');
+    const sidebarCategoryList = document.getElementById('sidebarCategoryList');
+    const categoryToggle = document.getElementById('categoryToggle');
+    const categoryArrow = document.getElementById('categoryArrow');
+    const mobileCategoryMenu = document.getElementById('mobileCategoryMenu');
+    const mobileCategoryPanel = document.getElementById('mobileCategoryPanel');
+    const favoriteBtnPlayer = document.getElementById('favoriteBtnPlayer');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      updateBadgeCounts();
+      loadChannels();
+      setupEventListeners();
+      setupShakaPlayer();
+    });
+    
+    function loadChannels() {
+      fetch('https://allinonereborn.xyz/jstrweb2/jstr.php')
+        .then(res => res.json())
+        .then(data => {
+          allChannels = data.filter(channel => channel.mpd); // Filter out non-playable channels
+          
+          // Extract unique categories and count them
+          data.forEach(channel => {
+            if (channel.category) {
+              const category = channel.category;
+              categories.add(category);
+              categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+            }
+          });
+          
+          // Sort categories alphabetically
+          categories = new Set(Array.from(categories).sort());
+          
+          renderSidebarCategories();
+          renderMobileCategories();
+          filterAndRenderChannels();
+          loader.style.display = 'none';
+        })
+        .catch(error => {
+          console.error('Error loading channels:', error);
+          loader.style.display = 'none';
+          showErrorState();
+        });
+    }
+    
+    function renderSidebarCategories() {
+      sidebarCategoryList.innerHTML = '';
+      
+      // Add "All" category
+      const allItem = document.createElement('div');
+      allItem.className = 'sidebar-category-item active';
+      allItem.innerHTML = `
+        <span>All Channels</span>
+        <span class="category-count">${allChannels.length}</span>
+      `;
+      allItem.onclick = () => {
+        document.querySelectorAll('.sidebar-category-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        allItem.classList.add('active');
+        currentCategory = 'all';
+        filterAndRenderChannels();
+      };
+      sidebarCategoryList.appendChild(allItem);
+      
+      // Add other categories
+      categories.forEach(category => {
+        const item = document.createElement('div');
+        item.className = 'sidebar-category-item';
+        item.innerHTML = `
+          <span>${category}</span>
+          <span class="category-count">${categoryCounts[category]}</span>
+        `;
+        item.onclick = () => {
+          document.querySelectorAll('.sidebar-category-item').forEach(item => {
+            item.classList.remove('active');
+          });
+          item.classList.add('active');
+          currentCategory = category;
+          filterAndRenderChannels();
+        };
+        sidebarCategoryList.appendChild(item);
+      });
+    }
+    
+    function renderMobileCategories() {
+      mobileCategoryPanel.innerHTML = '';
+      
+      // Add "All" category
+      const allItem = document.createElement('div');
+      allItem.className = 'category-chip active';
+      allItem.textContent = `All (${allChannels.length})`;
+      allItem.onclick = () => {
+        mobileCategoryPanel.classList.remove('open');
+        currentCategory = 'all';
+        filterAndRenderChannels();
+      };
+      mobileCategoryPanel.appendChild(allItem);
+      
+      // Add other categories
+      categories.forEach(category => {
+        const item = document.createElement('div');
+        item.className = 'category-chip';
+        item.textContent = `${category} (${categoryCounts[category]})`;
+        item.onclick = () => {
+          mobileCategoryPanel.classList.remove('open');
+          currentCategory = category;
+          filterAndRenderChannels();
+        };
+        mobileCategoryPanel.appendChild(item);
+      });
+    }
+    
+    function filterAndRenderChannels() {
+      let filtered = currentView === 'all' ? allChannels : 
+                    currentView === 'favorites' ? allChannels.filter(c => favorites.includes(c.channel_id || c.name)) :
+                    recentChannels.map(id => allChannels.find(c => (c.channel_id || c.name) === id)).filter(c => c);
+      
+      // Filter by category
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(c => c.category === currentCategory);
+      }
+      
+      // Filter by search
+      if (currentSearch) {
+        const searchLower = currentSearch.toLowerCase();
+        filtered = filtered.filter(c => 
+          c.name.toLowerCase().includes(searchLower) || 
+          (c.category && c.category.toLowerCase().includes(searchLower))
+        );
+      }
+      
+      filteredChannels = filtered;
+      
+      renderChannelsList(filtered);
+    }
+    
+    function renderChannelsList(channels) {
+      channelsList.innerHTML = '';
+      
+      // First, add the Telegram entry ALWAYS at the beginning of the channels list
+      const telegramEntry = allChannels.find(channel => 
+        channel.name === "Join Discord - RENAULT CHE4TS" || 
+        channel.telegram === "https://t.me/https://discord.gg/PwRRzkuqeC"
+      );
+      
+      if (telegramEntry) {
+        const telegramItem = createTelegramSidebarItem(telegramEntry);
+        channelsList.appendChild(telegramItem);
+      }
+      
+      if (channels.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'empty-state';
+        emptyMsg.innerHTML = `
+          <i class="fas fa-search"></i>
+          <p>No channels found</p>
+        `;
+        channelsList.appendChild(emptyMsg);
+        return;
+      }
+      
+      channels.forEach(channel => {
+        // Skip the Discord entry as we already added it
+        if (channel.name === "Join Discord - RENAULT CHE4TS" || 
+            channel.telegram === "https://discord.gg/PwRRzkuqeC") {
+          return;
+        }
+        
+        const channelIdentifier = channel.channel_id || channel.name;
+        
+        const item = document.createElement('div');
+        item.className = 'channel-item';
+        item.dataset.channelId = channelIdentifier;
+        item.onclick = () => playChannel(channel);
+        
+        const logo = document.createElement('img');
+        logo.className = 'channel-logo-small';
+        logo.src = channel.logo;
+        logo.alt = `${channel.name} logo`;
+        logo.onerror = () => {
+          logo.src = 'https://cdn.discordapp.com/attachments/1453788108452659302/1458491848636240115/cat-head-kitten-symbol-gaming-cat-logo-elegant-element-for-brand-abstract-icon-symbols-vector.png?ex=695fd5e2&is=695e8462&hm=543ff3bc51d6afd7b28c304f1516d02d8a6e876bb974efba095c7ea5cebbcc1e&';
+        };
+        
+        const info = document.createElement('div');
+        info.className = 'channel-info';
+        
+        const name = document.createElement('div');
+        name.className = 'channel-name';
+        name.textContent = channel.name;
+        
+        const meta = document.createElement('div');
+        meta.className = 'channel-meta';
+        meta.textContent = channel.category || 'General';
+        
+        info.appendChild(name);
+        info.appendChild(meta);
+        item.appendChild(logo);
+        item.appendChild(info);
+        channelsList.appendChild(item);
+      });
+    }
+    
+    function createTelegramSidebarItem(channel) {
+      const item = document.createElement('div');
+      item.className = 'channel-item telegram-item';
+      item.style.background = 'linear-gradient(90deg, rgba(36, 161, 222, 0.2), rgba(36, 161, 222, 0.1))';
+      item.style.border = '1px solid rgba(36, 161, 222, 0.3)';
+      item.style.cursor = 'pointer';
+      item.onclick = () => {
+        window.open('https://discord.gg/PwRRzkuqeC', '_blank');
+      };
+      
+      const logo = document.createElement('img');
+      logo.className = 'channel-logo-small';
+      logo.src = channel.logo || 'https://cdn.discordapp.com/attachments/1453788108452659302/1458492391404212294/discord-logo-discord-icon-transparent-free-png.png?ex=695fd663&is=695e84e3&hm=1777b53bb24382c159b0d293177d4c964b48044431c77c2d9e8fd1d70b0d58b3&';
+      logo.alt = 'Telegram logo';
+      logo.style.background = 'rgba(36, 161, 222, 0.2)';
+      logo.onerror = () => {
+        logo.src = 'https://cdn.discordapp.com/attachments/1453788108452659302/1458492391404212294/discord-logo-discord-icon-transparent-free-png.png?ex=695fd663&is=695e84e3&hm=1777b53bb24382c159b0d293177d4c964b48044431c77c2d9e8fd1d70b0d58b3&';
+      };
+      
+      const info = document.createElement('div');
+      info.className = 'channel-info';
+      
+      const name = document.createElement('div');
+      name.className = 'channel-name';
+      name.textContent = channel.name || 'Join Discord - RENAULT CHE4TS';
+      name.style.color = '#24A1DE';
+      name.style.fontWeight = '600';
+      
+      const meta = document.createElement('div');
+      meta.className = 'channel-meta';
+      meta.textContent = 'Click to join for updates & support';
+      meta.style.color = '#90e0ef';
+      
+      info.appendChild(name);
+      info.appendChild(meta);
+      item.appendChild(logo);
+      item.appendChild(info);
+      
+      return item;
+    }
+    
+    function setupShakaPlayer() {
+      shaka.polyfill.installAll();
+      if (!shaka.Player.isBrowserSupported()) {
+        alert("Shaka Player not supported in this browser");
+        return;
+      }
+      
+      player = new shaka.Player(videoElement);
+      ui = new shaka.ui.Overlay(player, videoContainer, videoElement);
+      
+      ui.configure({
+        controlPanelElements: [
+          'play_pause', 'time_and_duration', 'mute', 'volume', 'spacer',
+          'quality', 'language', 'picture_in_picture', 'fullscreen'
+        ],
+        addBigPlayButton: true,
+        seekBarColors: {
+          base: 'rgba(255,255,255,.2)',
+          buffered: 'rgba(255,255,255,.4)',
+          played: 'rgb(255,0,0)'
+        }
+      });
+      
+      player.configure({
+        streaming: {
+          bufferingGoal: 30,
+          rebufferingGoal: 5,
+          bufferBehind: 30,
+          retryParameters: {
+            timeout: 15000,
+            maxAttempts: 3,
+            baseDelay: 500,
+            backoffFactor: 1.5
+          }
+        }
+      });
+      
+      // Unmute on first interaction
+      ['click', 'touchstart'].forEach(evt => {
+        document.addEventListener(evt, () => {
+          if (videoElement.muted) {
+            videoElement.muted = false;
+          }
+        }, { once: true });
+      });
+    }
+    
+    function playChannel(channel) {
+      if (!channel || !channel.mpd) {
+        console.error('Invalid channel data');
+        return;
+      }
+      
+      currentChannel = channel;
+      
+      // Update UI
+      currentChannelTitle.textContent = channel.name;
+      currentChannelMeta.textContent = channel.category || 'Live Stream';
+      currentChannelLogo.src = channel.logo || 'https://cdn.discordapp.com/attachments/1453788108452659302/1458491848636240115/cat-head-kitten-symbol-gaming-cat-logo-elegant-element-for-brand-abstract-icon-symbols-vector.png?ex=695fd5e2&is=695e8462&hm=543ff3bc51d6afd7b28c304f1516d02d8a6e876bb974efba095c7ea5cebbcc1e&';
+      currentChannelLogo.onerror = () => {
+        currentChannelLogo.src = 'https://instasize.com/api/image/https://cdn.discordapp.com/attachments/1453788108452659302/1458491848636240115/cat-head-kitten-symbol-gaming-cat-logo-elegant-element-for-brand-abstract-icon-symbols-vector.png?ex=695fd5e2&is=695e8462&hm=543ff3bc51d6afd7b28c304f1516d02d8a6e876bb974efba095c7ea5cebbcc1e&';
+      };
+      
+      // Update active state in sidebar
+      document.querySelectorAll('.channel-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      const channelItem = document.querySelector(`[data-channel-id="${channel.channel_id || channel.name}"]`);
+      if (channelItem) {
+        channelItem.classList.add('active');
+      }
+      
+      // Update favorite button
+      updatePlayerFavoriteButton();
+      
+      // Configure player with channel data
+      player.configure({
+        drm: channel.drm ? { clearKeys: channel.drm } : undefined
+      });
+      
+      player.getNetworkingEngine().registerRequestFilter((type, request) => {
+        if (channel.referer) request.headers["Referer"] = channel.referer;
+        if (channel.userAgent) request.headers["User-Agent"] = channel.userAgent;
+        if (channel.token) request.headers["Cookie"] = channel.token;
+        
+        if (
+          (type === shaka.net.NetworkingEngine.RequestType.MANIFEST ||
+           type === shaka.net.NetworkingEngine.RequestType.SEGMENT) &&
+          !request.uris[0].includes("__hdnea__=") &&
+          channel.token
+        ) {
+          const sep = request.uris[0].includes("?") ? "&" : "?";
+          request.uris[0] += sep + channel.token;
+        }
+      });
+      
+      // Load and play the stream
+      player.load(channel.mpd)
+        .then(() => {
+          return videoElement.play();
+        })
+        .catch(error => {
+          console.error('Error playing channel:', error);
+          alert('Error playing this channel. Please try another.');
+        });
+      
+      // Add to recent
+      addToRecent(channel);
+      
+      // On mobile, scroll player into view
+      if (window.innerWidth < 1024) {
+        playerSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    
+    function updatePlayerFavoriteButton() {
+      if (!currentChannel) {
+        favoriteBtnPlayer.classList.remove('active');
+        return;
+      }
+      
+      const channelIdentifier = currentChannel.channel_id || currentChannel.name;
+      const isFavorite = favorites.includes(channelIdentifier);
+      
+      if (isFavorite) {
+        favoriteBtnPlayer.classList.add('active');
+        favoriteBtnPlayer.title = "Remove from favorites";
+      } else {
+        favoriteBtnPlayer.classList.remove('active');
+        favoriteBtnPlayer.title = "Add to favorites";
+      }
+    }
+    
+    function toggleFavorite(channelIdentifier) {
+      const index = favorites.indexOf(channelIdentifier);
+      if (index === -1) {
+        favorites.push(channelIdentifier);
+      } else {
+        favorites.splice(index, 1);
+      }
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      updateBadgeCounts();
+      updatePlayerFavoriteButton();
+    }
+    
+    function addToRecent(channel) {
+      const channelIdentifier = channel.channel_id || channel.name;
+      recentChannels = recentChannels.filter(id => id !== channelIdentifier);
+      recentChannels.unshift(channelIdentifier);
+      recentChannels = recentChannels.slice(0, 10);
+      localStorage.setItem('recentChannels', JSON.stringify(recentChannels));
+      updateBadgeCounts();
+    }
+    
+    function updateBadgeCounts() {
+      favCountEl.textContent = favorites.length;
+      recentCountEl.textContent = recentChannels.length;
+    }
+    
+    function setupEventListeners() {
+      // Navigation buttons
+      document.getElementById('allChannelsBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        currentView = 'all';
+        updateActiveNav(document.getElementById('allChannelsBtn'));
+        filterAndRenderChannels();
+      });
+      
+      document.getElementById('favoritesBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        currentView = 'favorites';
+        updateActiveNav(document.getElementById('favoritesBtn'));
+        filterAndRenderChannels();
+      });
+      
+      document.getElementById('recentBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        currentView = 'recent';
+        updateActiveNav(document.getElementById('recentBtn'));
+        filterAndRenderChannels();
+      });
+      
+      document.getElementById('homeBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        currentView = 'all';
+        updateActiveNav(document.getElementById('allChannelsBtn'));
+        filterAndRenderChannels();
+      });
+      
+      document.getElementById('contactBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.open('https://discord.gg/PwRRzkuqeC', '_blank');
+      });
+      
+      // Search functionality
+      sidebarSearch.addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        filterAndRenderChannels();
+      });
+      
+      // Category toggle
+      categoryToggle.addEventListener('click', () => {
+        sidebarCategoryList.classList.toggle('open');
+        categoryArrow.style.transform = sidebarCategoryList.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+      });
+      
+      // Favorite button on player
+      favoriteBtnPlayer.addEventListener('click', () => {
+        if (currentChannel) {
+          const channelIdentifier = currentChannel.channel_id || currentChannel.name;
+          toggleFavorite(channelIdentifier);
+        }
+      });
+      
+      // Fullscreen button
+      fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          videoContainer.requestFullscreen().catch(err => {
+            console.error(`Error attempting to enable fullscreen: ${err.message}`);
+          });
+        } else {
+          document.exitFullscreen();
+        }
+      });
+      
+      // Sidebar toggle
+      sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+      
+      // Mobile category menu
+      mobileCategoryMenu.addEventListener('click', () => {
+        mobileCategoryPanel.classList.toggle('open');
+      });
+      
+      // Close mobile category panel when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!mobileCategoryMenu.contains(e.target) && !mobileCategoryPanel.contains(e.target)) {
+          mobileCategoryPanel.classList.remove('open');
+        }
+      });
+      
+      // Close sidebar when clicking outside on mobile
+      contentArea.addEventListener('click', () => {
+        if (window.innerWidth < 1024 && sidebar.classList.contains('open')) {
+          sidebar.classList.remove('open');
+        }
+      });
+      
+      // Floating contact button
+      document.getElementById('floatingContact').addEventListener('click', () => {
+        window.open('https://discord.gg/PwRRzkuqeC', '_blank');
+      });
+      
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        // Escape clears search
+        if (e.key === 'Escape' && currentSearch) {
+          currentSearch = '';
+          sidebarSearch.value = '';
+          filterAndRenderChannels();
+        }
+        
+        // Ctrl+F focuses search
+        if (e.ctrlKey && e.key === 'f') {
+          e.preventDefault();
+          sidebarSearch.focus();
+        }
+        
+        // Space toggles play/pause
+        if (e.key === ' ' && document.activeElement.tagName !== 'INPUT') {
+          e.preventDefault();
+          if (videoElement.paused) {
+            videoElement.play();
+          } else {
+            videoElement.pause();
+          }
+        }
+      });
+    }
+    
+    function updateActiveNav(activeBtn) {
+      document.querySelectorAll('.nav-links a').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      activeBtn.classList.add('active');
+    }
+    
+    function showErrorState() {
+      channelsList.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #ddd; background: #050a1f; border-radius: 20px;">
+  <div style="font-size: 4rem; margin-bottom: 1rem; color: #5865F2;">
+    <i class="fab fa-discord"></i>
+  </div>
+  <h2 style="font-size: 2rem; color: #fff; margin-bottom: 0.7rem;">
+    Join Our Discord
+  </h2>
+  <p style="font-size: 1.2rem; color: #ccc; margin-bottom: 2rem;">
+    Get the latest channel updates, stream links, and community support
+  </p>
+  <button onclick="window.open('https://discord.gg/PwRRzkuqeC', '_blank')" style="
+    background: linear-gradient(90deg, #5865F2, #7289DA);
+    color: #ffffff;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+    transition: all 0.3s ease;
+  ">
+    Join Now
+  </button>
+</div>
+      `;
+    }
+  </script>
+</body>
+</html>
